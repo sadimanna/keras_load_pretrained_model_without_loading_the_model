@@ -1,5 +1,5 @@
 def selective_load_weights(new_model, old_model_file_path):
-    # LOADING THE FILE
+	# LOADING THE FILE
     old_model_file = h5py.File(old_model_file_path,'r')
     model_weights = old_model_file['model_weights']
 
@@ -31,31 +31,27 @@ def selective_load_weights(new_model, old_model_file_path):
     for tol in types_of_layers:
         new_layers_dict[tol] = [l for l in new_model_layers if tol in l]
         # The last layer to be added will have the highest index
+        # NUMBER OF LAYERS OF EACH TYPE
         if new_layers_dict[tol] != []:
-            highestindex = new_layers_dict[tol][-1].split('_')[-1]
-            if not highestindex.isdigit():
-                highestindex = 0
-            else:
-                highestindex = int(highestindex)
+            num_layers = len(new_layers_dict[tol])
         else:
-            highestindex = None
+            num_layers = None
         
-        # RENAME THE NAMES OF THE LAYERS TO SORT THEM IN ORDER OF THEIR NUMBERING
-        # OTHERWISE 'conv2d_2' comes after 'conv2d_13' after sorting the string, 
-        # SO converting 'conv2d_2' to 'conv2d_02'
-        if highestindex !=None:
+        if num_layers !=None:
+            #print(tol,num_layers)
+            # HIGHEST INDEX OF LAYERS OF THIS TYPE
+            highestindex = int(new_layers_dict[tol][-1].split('_')[-1])
             lenindex = len(str(highestindex))
-            for i in range(highestindex):
+            for i in range(num_layers):
                 nld = new_layers_dict[tol][i].split('_')
                 if not nld[-1].isdigit():
                     nld.append('0'*lenindex)
                 elif nld[-1].isdigit():
                     nld[-1] = (lenindex-len(nld[-1]))*'0' + nld[-1]
                 new_layers_dict[tol][i] = '_'.join([n for n in nld])
-                new_model
         
         new_layers_dict[tol] = sorted(new_layers_dict[tol])
-        #print(new_layers_dict[tol])
+    	#print(new_layers_dict[tol])
     
     # INITIALIZING THE WEIGHTS
     for k in list(key_dict.keys()):
@@ -95,7 +91,6 @@ def selective_load_weights(new_model, old_model_file_path):
 
             #SET THE WEIGHTS
             new_model.get_layer(layer_name).set_weights(weight_list)
-    
-    old_model_file.close()
+                
     # RETURN THE INITIALIZED MODEL
     return new_model
