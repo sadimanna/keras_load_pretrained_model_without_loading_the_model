@@ -1,5 +1,5 @@
 def selective_load_weights(new_model, old_model_file_path):
-	# LOADING THE FILE
+    # LOADING THE FILE
     old_model_file = h5py.File(old_model_file_path,'r')
     model_weights = old_model_file['model_weights']
 
@@ -95,6 +95,7 @@ def selective_load_weights(new_model, old_model_file_path):
 
             #SET THE WEIGHTS
             new_model.get_layer(layer_name).set_weights(weight_list)
-                
+    
+    old_model_file.close()
     # RETURN THE INITIALIZED MODEL
     return new_model
